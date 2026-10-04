@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Seletor de Cores PWA</title>
+
+  <!-- PWA & Meta Tags -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="ColorPicker" />
+  <link rel="apple-touch-icon" href="icon.png" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      background-color: #f8f9fa;
+    }
+
+    body {
+      color: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 14px 16px;
+      background-color: #ffffff;
+      text-align: center;
+      border-bottom: 1px solid #e5e7eb;
+      flex-shrink: 0;
+      width: 100%;
+    }
+
+    header h1 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    main {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 12px;
+      padding-bottom: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .view-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .view-section.hidden {
+      display: none !important;
+    }
+
+    /* Container de Imagem */
+    .image-container {
+      position: relative;
+      width: 100%;
+      min-height: 250px;
+      max-height: 350px;
+      background: #f1f3f5;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      touch-action: none;
+      border: 1px solid #e5e7eb;
+    }
+
+    canvas {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      cursor: crosshair;
+      display: none;
+    }
+
+    .placeholder {
+      color: #6b7280;
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 20px;
+    }
+
+    /* Lupa Zoom */
+    .zoom-lens {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+      pointer-events: none;
+      display: none;
+      overflow: hidden;
+      background-color: #ffffff;
+      z-index: 10;
+    }
+
+    .zoom-lens canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .zoom-crosshair {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 8px;
+      height: 8px;
+      transform: translate(-50%, -50%);
+      border: 1.5px solid #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 3px rgba(0,0,0,0.8);
+      pointer-events: none;
+      z-index: 11;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      color: #111827;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    /* Seção da Paleta de Cores */
+    .palette-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .palette-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .tool-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .circle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .circle-btn:active {
+      background: #f3f4f6;
+      transform: scale(0.95);
+    }
+
+    .circle-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: #4b5563;
+    }
+
+    /* Barra de Cores Contínua */
+    .palette-bar {
+      display: flex;
+      width: 100%;
+      height: 44px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .palette-segment {
+      flex: 1;
+      height: 100%;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+      min-width: 0;
+    }
+
+    .palette-segment:active {
+      transform: scaleY(0.9);
+    }
+
+    /* Seção Cores Selecionadas */
+    .details-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .color-swatches-row {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .swatch-large {
+      flex: 1;
+      height: 70px;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .code-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .field-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .field-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #6b7280;
+      width: 45px;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+
+    .field-value {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #111827;
+      font-family: monospace;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0 8px;
+    }
+
+    .copy-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
+      flex-shrink: 0;
+    }
+
+    .copy-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    /* Lista de Cores Salvas */
+    .saved-grid-large {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 10px;
+      width: 100%;
+    }
+
+    .saved-card {
+      height: 75px;
+      border-radius: 12px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid rgba(0,0,0,0.1);
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transition: transform 0.1s;
+    }
+
+    .saved-card:active {
+      transform: scale(0.97);
+    }
+
+    .saved-card .hex-code {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    }
+
+    .saved-card .delete-btn {
+      align-self: flex-end;
+      background: rgba(0,0,0,0.4);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111827;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    /* Menu Inferior */
+    nav.bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #ffffff;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #e5e7eb;
+      z-index: 20;
+      width: 100%;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: #6b7280;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.7rem;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .nav-btn.active {
+      color: #2563eb;
+      font-weight: 600;
+    }
+
+    .nav-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1 id="headerTitle">Seletor de Cores</h1>
+  </header>
+
+  <div id="toast" class="toast">Notificação</div>
+
+  <main>
+    <div id="pickerView" class="view-section">
+      <div class="image-container" id="imageContainer">
+        <div id="placeholder" class="placeholder">Carregue uma imagem para extrair a paleta de cores</div>
+        <canvas id="canvas"></canvas>
+        <div id="zoomLens" class="zoom-lens">
+          <canvas id="zoomCanvas" width="100" height="100"></canvas>
+          <div class="zoom-crosshair"></div>
+        </div>
+      </div>
+
+      <!-- Paleta de Cores Harmônicas -->
+      <div class="palette-container">
+        <div class="section-title">Paleta de Cores</div>
+        <div class="palette-toolbar">
+          <div class="tool-group">
+            <button class="circle-btn" onclick="adjustPaletteCount(-1)">-</button>
+            <button class="circle-btn" onclick="adjustPaletteCount(1)">+</button>
+          </div>
+          <div class="tool-group">
+            <button class="circle-btn" onclick="saveSelectedColor()" title="Salvar Cor Atual">
+              <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="paletteBar" class="palette-bar"></div>
+      </div>
+
+      <!-- Seção Cores Detalhada -->
+      <div class="details-container">
+        <div class="section-title">Cores</div>
+        <div class="color-swatches-row">
+          <div id="swatchPrimary" class="swatch-large"></div>
+          <div id="swatchSecondary" class="swatch-large"></div>
+        </div>
+
+        <div class="code-fields">
+          <div class="field-card">
+            <span class="field-label">HEX</span>
+            <span class="field-value" id="hexText">#f6f6f8</span>
+            <button class="copy-btn" onclick="copyValue('hexText')">
+              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            </button>
+          </div>
+
+          <div class="field-card">
+            <span class="field-label">RGB</span>
+            <span class="field-value" id="rgbText">rgba(246, 246, 248)</span>
+            <button class="copy-btn" onclick="copyValue('rgbText')">
+              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View Cores Salvas -->
+    <div id="savedView" class="view-section hidden">
+      <div class="section-title">Cores Salvas</div>
+      <div id="savedGrid" class="saved-grid-large"></div>
+    </div>
+  </main>
+
+  <!-- Menu Inferior -->
+  <nav class="bottom-bar">
+    <button id="navHome" class="nav-btn active" onclick="switchTab('picker')">
+      <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+      Início
+    </button>
+
+    <button id="navGallery" class="nav-btn" onclick="triggerFile('fileGallery')">
+      <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zm-2-3l-2.03 2.71L14.5 11l-3.5 4.5h9z"/></svg>
+      Galeria
+    </button>
+
+    <button id="navCamera" class="nav-btn" onclick="triggerFile('fileCamera')">
+      <svg viewBox="0 0 24 24"><path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-8h-3.17L16 5H8L6.17 7H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm0 12H3V9h3.88l1.83-2h6.58l1.83 2H21v10z"/></svg>
+      Câmera
+    </button>
+
+    <button id="navSaved" class="nav-btn" onclick="switchTab('saved')">
+      <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      Salvas
+    </button>
+  </nav>
+
+  <input type="file" id="fileGallery" accept="image/*" />
+  <input type="file" id="fileCamera" accept="image/*" capture="environment" />
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const imageContainer = document.getElementById('imageContainer');
+    const placeholder = document.getElementById('placeholder');
+    const paletteBar = document.getElementById('paletteBar');
+    const swatchPrimary = document.getElementById('swatchPrimary');
+    const swatchSecondary = document.getElementById('swatchSecondary');
+    const hexText = document.getElementById('hexText');
+    const rgbText = document.getElementById('rgbText');
+    const savedGrid = document.getElementById('savedGrid');
+    const toast = document.getElementById('toast');
+
+    const zoomLens = document.getElementById('zoomLens');
+    const zoomCanvas = document.getElementById('zoomCanvas');
+    const zoomCtx = zoomCanvas.getContext('2d');
+
+    const pickerView = document.getElementById('pickerView');
+    const savedView = document.getElementById('savedView');
+    const headerTitle = document.getElementById('headerTitle');
+
+    const navHome = document.getElementById('navHome');
+    const navGallery = document.getElementById('navGallery');
+    const navCamera = document.getElementById('navCamera');
+    const navSaved = document.getElementById('navSaved');
+
+    let currentColor = "#051E4E";
+    let loadedImage = new Image();
+    let selectedPin = null;
+    let paletteSteps = 8;
+
+    function switchTab(tab) {
+      navHome.classList.remove('active');
+      navGallery.classList.remove('active');
+      navCamera.classList.remove('active');
+      navSaved.classList.remove('active');
+
+      if (tab === 'saved') {
+        pickerView.classList.add('hidden');
+        savedView.classList.remove('hidden');
+        headerTitle.innerText = "Cores Salvas";
+        navSaved.classList.add('active');
+        renderSavedColors();
+      } else {
+        pickerView.classList.remove('hidden');
+        savedView.classList.add('hidden');
+        headerTitle.innerText = "Seletor de Cores";
+
+        if (tab === 'picker') navHome.classList.add('active');
+        if (tab === 'gallery') navGallery.classList.add('active');
+        if (tab === 'camera') navCamera.classList.add('active');
+      }
+    }
+
+    function triggerFile(inputId) {
+      switchTab(inputId === 'fileGallery' ? 'gallery' : 'camera');
+      document.getElementById(inputId).click();
+    }
+
+    function showToast(msg) {
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function copyValue(elementId) {
+      const text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text);
+      showToast(`Copiado: ${text}`);
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        loadedImage.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    document.getElementById('fileGallery').addEventListener('change', handleFileSelect);
+    document.getElementById('fileCamera').addEventListener('change', handleFileSelect);
+
+    loadedImage.onload = function() {
+      placeholder.style.display = 'none';
+      canvas.style.display = 'block';
+
+      const containerWidth = imageContainer.clientWidth;
+      const containerHeight = imageContainer.clientHeight;
+
+      const scale = Math.min(containerWidth / loadedImage.width, containerHeight / loadedImage.height);
+
+      canvas.width = loadedImage.width * scale;
+      canvas.height = loadedImage.height * scale;
+
+      selectedPin = null;
+      redrawCanvas();
+    };
+
+    function redrawCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(loadedImage, 0, 0, canvas.width, canvas.height);
+
+      if (selectedPin) {
+        ctx.beginPath();
+        ctx.arc(selectedPin.x, selectedPin.y, 6, 0, 2 * Math.PI);
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(selectedPin.x, selectedPin.y, 8, 0, 2 * Math.PI);
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+
+    function handlePointerMove(e) {
+      if (!loadedImage.src || canvas.style.display === 'none') return;
+
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      if (x < 0 || x > canvas.width || y < 0 || y > canvas.height) {
+        zoomLens.style.display = 'none';
+        return;
+      }
+
+      zoomLens.style.display = 'block';
+      const containerRect = imageContainer.getBoundingClientRect();
+      const lensX = clientX - containerRect.left - 50;
+      const lensY = clientY - containerRect.top - 110;
+
+      zoomLens.style.left = `${Math.max(0, Math.min(containerRect.width - 100, lensX))}px`;
+      zoomLens.style.top = `${Math.max(0, Math.min(containerRect.height - 100, lensY))}px`;
+
+      zoomCtx.imageSmoothingEnabled = false;
+      zoomCtx.clearRect(0, 0, 100, 100);
+      zoomCtx.drawImage(canvas, x - 12, y - 12, 24, 24, 0, 0, 100, 100);
+
+      const pixel = ctx.getImageData(x, y, 1, 1).data;
+      const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
+      
+      updateSelectedColor(hex);
+
+      selectedPin = { x, y };
+      redrawCanvas();
+    }
+
+    function handlePointerEnd() {
+      zoomLens.style.display = 'none';
+    }
+
+    canvas.addEventListener('touchstart', handlePointerMove);
+    canvas.addEventListener('touchmove', handlePointerMove);
+    canvas.addEventListener('touchend', handlePointerEnd);
+    canvas.addEventListener('mousedown', handlePointerMove);
+
+    function updateSelectedColor(hex) {
+      currentColor = hex;
+      const rgb = hexToRgb(hex);
+
+      swatchPrimary.style.backgroundColor = hex;
+      swatchSecondary.style.backgroundColor = hex;
+
+      hexText.innerText = hex.toLowerCase();
+      rgbText.innerText = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+
+      renderPaletteBar();
+    }
+
+    function rgbToHex(r, g, b) {
+      return "#" + [r, g, b].map(x => {
+        const hex = x.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      }).join('').toUpperCase();
+    }
+
+    function hexToRgb(hex) {
+      const bigint = parseInt(hex.replace('#', ''), 16);
+      return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
+    }
+
+    function rgbToHsl(r, g, b) {
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+
+      if (max === min) {
+        h = s = 0;
+      } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+      }
+      return [h * 360, s * 100, l * 100];
+    }
+
+    function hslToHex(h, s, l) {
+      h /= 360; s /= 100; l /= 100;
+      let r, g, b;
+
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1/6) return p + (q - p) * 6 * t;
+          if (t < 1/2) return q;
+          if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          return p;
+        };
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+      }
+
+      return rgbToHex(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255));
+    }
+
+    function generateContinuousPalette(hex, count) {
+      const rgb = hexToRgb(hex);
+      const [h, s, l] = rgbToHsl(rgb.r, rgb.g, rgb.b);
+      const colors = [];
+
+      const safeL = Math.max(25, Math.min(75, l));
+      const safeS = Math.max(50, s);
+
+      for (let i = 0; i < count; i++) {
+        let currentH, currentL;
+
+        if (i === count - 1) {
+          currentH = (h + 150) % 360; 
+          currentL = safeL;
+        } else {
+          const offset = ((i - Math.floor(count / 2)) * 18);
+          currentH = (h + offset + 360) % 360;
+          currentL = Math.max(20, Math.min(80, safeL + (i - Math.floor(count / 2)) * 6));
+        }
+
+        colors.push(hslToHex(currentH, safeS, currentL));
+      }
+      return colors;
+    }
+
+    function renderPaletteBar() {
+      const currentPaletteColors = generateContinuousPalette(currentColor, paletteSteps);
+      paletteBar.innerHTML = '';
+
+      currentPaletteColors.forEach(colorHex => {
+        const seg = document.createElement('div');
+        seg.className = 'palette-segment';
+        seg.style.backgroundColor = colorHex;
+        seg.title = colorHex;
+        seg.onclick = () => {
+          updateSelectedColor(colorHex);
+        };
+        paletteBar.appendChild(seg);
+      });
+    }
+
+    function adjustPaletteCount(delta) {
+      paletteSteps = Math.max(3, Math.min(12, paletteSteps + delta));
+      renderPaletteBar();
+    }
+
+    function saveSelectedColor() {
+      let saved = JSON.parse(localStorage.getItem('savedColors') || '[]');
+      if (!saved.includes(currentColor)) {
+        saved.push(currentColor);
+        localStorage.setItem('savedColors', JSON.stringify(saved));
+        showToast("Cor salva com sucesso!");
+      } else {
+        showToast("Esta cor já está salva!");
+      }
+    }
+
+    function removeColor(hex, event) {
+      event.stopPropagation();
+      let saved = JSON.parse(localStorage.getItem('savedColors') || '[]');
+      saved = saved.filter(c => c !== hex);
+      localStorage.setItem('savedColors', JSON.stringify(saved));
+      renderSavedColors();
+      showToast("Cor removida!");
+    }
+
+    function renderSavedColors() {
+      let saved = JSON.parse(localStorage.getItem('savedColors') || '[]');
+      savedGrid.innerHTML = '';
+
+      if (saved.length === 0) {
+        savedGrid.innerHTML = '<div style="color: #6b7280; font-size: 0.85rem; grid-column: 1/-1; text-align: center; padding: 20px;">Nenhuma cor salva ainda.</div>';
+        return;
+      }
+
+      saved.forEach(hex => {
+        const card = document.createElement('div');
+        card.className = 'saved-card';
+        card.style.backgroundColor = hex;
+        card.onclick = () => {
+          updateSelectedColor(hex);
+          switchTab('picker');
+        };
+
+        card.innerHTML = `
+          <button class="delete-btn" onclick="removeColor('${hex}', event)">✕</button>
+          <span class="hex-code">${hex}</span>
+        `;
+
+        savedGrid.appendChild(card);
+      });
+    }
+
+    // Inicialização
+    updateSelectedColor("#051E4E");
+
+    // Registro do Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registrado:', reg.scope))
+          .catch(err => console.error('Erro ao registrar Service Worker:', err));
+      });
+    }
+  </script>
+</body>
+</html>
