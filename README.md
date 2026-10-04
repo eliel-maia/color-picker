@@ -1,4 +1,4 @@
-# 🎨 Seletor de Cores PWA
+## 🎨 Seletor de Cores PWA
 
 Aplicativo Web Progressivo (PWA) leve, moderno e responsivo para seleção, extração e organização de paletas de cores a partir de imagens da galeria ou capturas da câmera.
 
