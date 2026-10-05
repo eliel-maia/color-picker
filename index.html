@@ -319,17 +319,16 @@
       background: none;
       border: none;
       color: #2563eb;
-      font-size: 0.8rem;
-      font-weight: 600;
+      padding: 4px;
       display: flex;
       align-items: center;
-      gap: 4px;
+      justify-content: center;
       cursor: pointer;
     }
 
     .gradient-action-btn svg {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       fill: currentColor;
     }
 
@@ -623,9 +622,8 @@
         <div class="scheme-block">
           <div class="scheme-header">
             <span class="scheme-title">Complementar</span>
-            <button class="gradient-action-btn" onclick="copySchemeColors('complementary')">
+            <button class="gradient-action-btn" onclick="copySchemeColors('complementary')" title="Copiar Cores">
               <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-              Criar gradiente
             </button>
           </div>
           <p class="scheme-desc">Emparelha a cor com seu oposto direto no círculo cromático (180°) para um efeito marcante e de alto contraste.</p>
@@ -636,9 +634,8 @@
         <div class="scheme-block">
           <div class="scheme-header">
             <span class="scheme-title">Complementar dividida</span>
-            <button class="gradient-action-btn" onclick="copySchemeColors('splitComplementary')">
+            <button class="gradient-action-btn" onclick="copySchemeColors('splitComplementary')" title="Copiar Cores">
               <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-              Criar gradiente
             </button>
           </div>
           <p class="scheme-desc">Usa a cor base com duas cores adjacentes ao seu complemento — cerca de 30° do matiz oposto. Oferece contraste forte com mais flexibilidade que o par complementar clássico.</p>
@@ -649,9 +646,8 @@
         <div class="scheme-block">
           <div class="scheme-header">
             <span class="scheme-title">Triádica</span>
-            <button class="gradient-action-btn" onclick="copySchemeColors('triadic')">
+            <button class="gradient-action-btn" onclick="copySchemeColors('triadic')" title="Copiar Cores">
               <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-              Criar gradiente
             </button>
           </div>
           <p class="scheme-desc">Inclui três cores igualmente espaçadas a 120° no círculo cromático. Para melhores resultados, deixe uma cor dominar e use as demais como acentos.</p>
@@ -662,9 +658,8 @@
         <div class="scheme-block">
           <div class="scheme-header">
             <span class="scheme-title">Análoga</span>
-            <button class="gradient-action-btn" onclick="copySchemeColors('analogous')">
+            <button class="gradient-action-btn" onclick="copySchemeColors('analogous')" title="Copiar Cores">
               <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-              Criar gradiente
             </button>
           </div>
           <p class="scheme-desc">Este esquema usa três cores com brilho e saturação semelhantes, espaçadas a cada 30° no círculo cromático. Gera transições suaves e harmoniosas.</p>
@@ -675,9 +670,8 @@
         <div class="scheme-block">
           <div class="scheme-header">
             <span class="scheme-title">Monocromática</span>
-            <button class="gradient-action-btn" onclick="copySchemeColors('monochromatic')">
+            <button class="gradient-action-btn" onclick="copySchemeColors('monochromatic')" title="Copiar Cores">
               <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-              Criar gradiente
             </button>
           </div>
           <p class="scheme-desc">Usa variações de um único matiz com ajuste de brilho em ±50% — para um visual sutil e consistente.</p>
@@ -688,9 +682,8 @@
         <div class="scheme-block">
           <div class="scheme-header">
             <span class="scheme-title">Tetrádica</span>
-            <button class="gradient-action-btn" onclick="copySchemeColors('tetradic')">
+            <button class="gradient-action-btn" onclick="copySchemeColors('tetradic')" title="Copiar Cores">
               <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-              Criar gradiente
             </button>
           </div>
           <p class="scheme-desc">Combina dois pares complementares espaçados a 60° no círculo cromático para uma paleta dinâmica e equilibrada.</p>
