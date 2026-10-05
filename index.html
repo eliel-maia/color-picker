@@ -5,13 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Seletor de Cores PWA</title>
 
-  <!-- PWA & Meta Tags -->
+  <!-- PWA & Web App Manifest -->
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#ffffff" />
+
+  <!-- Meta Tags para iOS (iPhone / iPad) - Usando 'icon.png' -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="ColorPicker" />
   <link rel="apple-touch-icon" href="icon.png" />
+
+  <!-- Favicons e Ícone Principal - Usando 'icon.png' -->
+  <link rel="icon" type="image/png" href="icon.png" />
+  <meta name="theme-color" content="#ffffff" />
 
   <style>
     * {
@@ -55,6 +60,80 @@
 
     .view-section.hidden {
       display: none !important;
+    }
+
+    /* Banner / Botão de Instalação PWA */
+    .install-banner {
+      background: #2563eb;
+      color: #ffffff;
+      padding: 12px 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .install-banner.hidden {
+      display: none !important;
+    }
+
+    .install-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .install-btn {
+      background: #ffffff;
+      color: #2563eb;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .install-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Guia de instalação no iOS */
+    .ios-instructions {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .ios-instructions.hidden {
+      display: none !important;
+    }
+
+    .ios-header {
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .close-ios-btn {
+      background: none;
+      border: none;
+      color: #1e40af;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
     }
 
     /* Container de Imagem Ampliado */
@@ -245,7 +324,6 @@
       flex-shrink: 0;
     }
 
-    /* Inputs Editáveis para Códigos de Cor */
     .field-value-input {
       font-size: 0.9rem;
       font-weight: 500;
@@ -281,7 +359,7 @@
       fill: currentColor;
     }
 
-    /* SEÇÃO DE VARIAÇÕES E COMBINAÇÕES EM DUAS COLUNAS */
+    /* Variações e combinações de cores */
     .variations-container {
       display: flex;
       flex-direction: column;
@@ -347,7 +425,6 @@
       fill: currentColor;
     }
 
-    /* Percentuais (0% - 100%) */
     .percentage-labels {
       display: flex;
       justify-content: space-between;
@@ -357,7 +434,6 @@
       font-weight: 500;
     }
 
-    /* Barras de Cores com altura reduzida */
     .color-strip {
       display: flex;
       width: 100%;
@@ -379,7 +455,6 @@
       opacity: 0.8;
     }
 
-    /* ESTILO EM GRID PARA CORES SALVAS */
     .saved-grid-list {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -479,7 +554,6 @@
       text-overflow: ellipsis;
     }
 
-    /* Toast Notification */
     .toast {
       position: fixed;
       top: 15px;
@@ -502,7 +576,6 @@
       opacity: 1;
     }
 
-    /* Menu Inferior */
     nav.bottom-bar {
       position: fixed;
       bottom: 0;
@@ -552,6 +625,24 @@
   <div id="toast" class="toast">Notificação</div>
 
   <main>
+    <!-- Banner de Instalação no Android / Chrome -->
+    <div id="installBanner" class="install-banner hidden">
+      <div class="install-info">
+        <svg style="width:20px;height:20px;fill:currentColor;" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        <span>Instalar o aplicativo na tela inicial</span>
+      </div>
+      <button class="install-btn" id="btnInstall">Instalar</button>
+    </div>
+
+    <!-- Guia de Instalação no iOS (iPhone/iPad) -->
+    <div id="iosInstructions" class="ios-instructions hidden">
+      <div class="ios-header">
+        <span>Instalar no iPhone / iPad</span>
+        <button class="close-ios-btn" onclick="hideIosInstructions()">✕</button>
+      </div>
+      <div>Para instalar este app, toque no ícone de <strong>Compartilhar</strong> no Safari e escolha <strong>"Adicionar à Tela de Início"</strong>.</div>
+    </div>
+
     <div id="pickerView" class="view-section">
       <div class="image-container" id="imageContainer">
         <div id="placeholder" class="placeholder">Carregue uma imagem para extrair a paleta de cores</div>
@@ -572,7 +663,7 @@
           </div>
           <div class="tool-group">
             <button class="circle-btn" onclick="saveSelectedColor()" title="Salvar Cor Atual">
-              <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M17 3H5c-1.1 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
             </button>
           </div>
         </div>
@@ -603,95 +694,67 @@
         </div>
       </div>
 
-      <!-- SEÇÃO: Variações e combinações de cores em 2 Colunas -->
+      <!-- Variações e combinações -->
       <div class="variations-container">
         <h2 class="variations-header-title">Variações e combinações de cores</h2>
 
         <div class="schemes-grid">
-          <!-- Tons Escuros -->
           <div class="scheme-block">
-            <div class="scheme-header">
-              <span class="scheme-title">Tons escuros</span>
-            </div>
-            <div class="percentage-labels">
-              <span>0%</span><span>50%</span><span>100%</span>
-            </div>
+            <div class="scheme-header"><span class="scheme-title">Tons escuros</span></div>
+            <div class="percentage-labels"><span>0%</span><span>50%</span><span>100%</span></div>
             <div id="darkTonesStrip" class="color-strip"></div>
           </div>
 
-          <!-- Tons Claros -->
           <div class="scheme-block">
-            <div class="scheme-header">
-              <span class="scheme-title">Tons claros</span>
-            </div>
-            <div class="percentage-labels">
-              <span>0%</span><span>50%</span><span>100%</span>
-            </div>
+            <div class="scheme-header"><span class="scheme-title">Tons claros</span></div>
+            <div class="percentage-labels"><span>0%</span><span>50%</span><span>100%</span></div>
             <div id="lightTonesStrip" class="color-strip"></div>
           </div>
 
-          <!-- Complementar -->
           <div class="scheme-block">
             <div class="scheme-header">
               <span class="scheme-title">Complementar</span>
-              <button class="gradient-action-btn" onclick="copySchemeColors('complementary')" title="Copiar Cores">
-                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-              </button>
+              <button class="gradient-action-btn" onclick="copySchemeColors('complementary')" title="Copiar Cores"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button>
             </div>
             <div id="complementaryStrip" class="color-strip"></div>
           </div>
 
-          <!-- Complementar Dividida -->
           <div class="scheme-block">
             <div class="scheme-header">
               <span class="scheme-title">Comp. dividida</span>
-              <button class="gradient-action-btn" onclick="copySchemeColors('splitComplementary')" title="Copiar Cores">
-                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-              </button>
+              <button class="gradient-action-btn" onclick="copySchemeColors('splitComplementary')" title="Copiar Cores"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button>
             </div>
             <div id="splitComplementaryStrip" class="color-strip"></div>
           </div>
 
-          <!-- Triádica -->
           <div class="scheme-block">
             <div class="scheme-header">
               <span class="scheme-title">Triádica</span>
-              <button class="gradient-action-btn" onclick="copySchemeColors('triadic')" title="Copiar Cores">
-                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-              </button>
+              <button class="gradient-action-btn" onclick="copySchemeColors('triadic')" title="Copiar Cores"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button>
             </div>
             <div id="triadicStrip" class="color-strip"></div>
           </div>
 
-          <!-- Análoga -->
           <div class="scheme-block">
             <div class="scheme-header">
               <span class="scheme-title">Análoga</span>
-              <button class="gradient-action-btn" onclick="copySchemeColors('analogous')" title="Copiar Cores">
-                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-              </button>
+              <button class="gradient-action-btn" onclick="copySchemeColors('analogous')" title="Copiar Cores"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button>
             </div>
             <div id="analogousStrip" class="color-strip"></div>
           </div>
 
-          <!-- Monocromática -->
           <div class="scheme-block">
             <div class="scheme-header">
               <span class="scheme-title">Monocromática</span>
-              <button class="gradient-action-btn" onclick="copySchemeColors('monochromatic')" title="Copiar Cores">
-                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-              </button>
+              <button class="gradient-action-btn" onclick="copySchemeColors('monochromatic')" title="Copiar Cores"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button>
             </div>
             <div id="monochromaticStrip" class="color-strip"></div>
           </div>
 
-          <!-- Tetrádica -->
           <div class="scheme-block">
             <div class="scheme-header">
               <span class="scheme-title">Tetrádica</span>
-              <button class="gradient-action-btn" onclick="copySchemeColors('tetradic')" title="Copiar Cores">
-                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-              </button>
+              <button class="gradient-action-btn" onclick="copySchemeColors('tetradic')" title="Copiar Cores"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button>
             </div>
             <div id="tetradicStrip" class="color-strip"></div>
           </div>
@@ -755,12 +818,57 @@
     const navCamera = document.getElementById('navCamera');
     const navSaved = document.getElementById('navSaved');
 
+    const installBanner = document.getElementById('installBanner');
+    const btnInstall = document.getElementById('btnInstall');
+    const iosInstructions = document.getElementById('iosInstructions');
+
+    let deferredPrompt;
     let currentColor = "#7C5CFF";
     let loadedImage = new Image();
     let selectedPin = null;
     let paletteSteps = 8;
     let activeSchemesData = {};
     let extractedImageColors = [];
+
+    // LÓGICA DE INSTALAÇÃO DO PWA (ANDROID & DESKTOP)
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBanner.classList.remove('hidden');
+    });
+
+    btnInstall.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        installBanner.classList.add('hidden');
+      }
+      deferredPrompt = null;
+    });
+
+    window.addEventListener('appinstalled', () => {
+      installBanner.classList.add('hidden');
+      showToast('Aplicativo instalado!');
+    });
+
+    // DETECÇÃO DE IOS (IPHONE / IPAD)
+    function isIos() {
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      return /iphone|ipad|ipod/.test(userAgent);
+    }
+
+    function isInStandaloneMode() {
+      return ('standalone' in window.navigator) && (window.navigator.standalone);
+    }
+
+    if (isIos() && !isInStandaloneMode()) {
+      iosInstructions.classList.remove('hidden');
+    }
+
+    function hideIosInstructions() {
+      iosInstructions.classList.add('hidden');
+    }
 
     function switchTab(tab) {
       navHome.classList.remove('active');
@@ -918,7 +1026,6 @@
       renderVariationsAndSchemes();
     }
 
-    // Processa digitação manual do código HEX
     function handleHexInputChange(val) {
       let cleaned = val.trim();
       if (!cleaned.startsWith('#')) {
@@ -926,13 +1033,11 @@
       }
 
       if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(cleaned)) {
-        // Reseta as cores extraídas da imagem para recalcular dinamicamente a paleta e os esquemas
         extractedImageColors = [];
         updateSelectedColor(cleaned);
       }
     }
 
-    // Processa digitação manual do valor RGB
     function handleRgbInputChange(val) {
       const matches = val.match(/\d+/g);
       if (matches && matches.length >= 3) {
@@ -941,7 +1046,6 @@
         const b = Math.min(255, parseInt(matches[2]));
 
         const hex = rgbToHex(r, g, b);
-        // Reseta as cores extraídas da imagem para recalcular dinamicamente a paleta e os esquemas
         extractedImageColors = [];
         updateSelectedColor(hex);
       }
@@ -1005,7 +1109,6 @@
       return rgbToHex(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255));
     }
 
-    /* EXTRAÇÃO REAL DE CORES DA IMAGEM */
     function extractColorsFromImage() {
       if (!canvas.width || !canvas.height) return;
 
@@ -1087,7 +1190,6 @@
       renderPaletteBar();
     }
 
-    /* RENDERIZADOR DE VARIAÇÕES E PALETAS HARMÔNICAS */
     function renderVariationsAndSchemes() {
       const rgb = hexToRgb(currentColor);
       const [h, s, l] = rgbToHsl(rgb.r, rgb.g, rgb.b);
