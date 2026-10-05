@@ -275,7 +275,7 @@
       fill: currentColor;
     }
 
-    /* SEÇÃO DE VARIAÇÕES E COMBINAÇÕES */
+    /* SEÇÃO DE VARIAÇÕES E COMBINAÇÕES EM DUAS COLUNAS */
     .variations-container {
       display: flex;
       flex-direction: column;
@@ -291,10 +291,21 @@
       line-height: 1.3;
     }
 
+    .schemes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      width: 100%;
+    }
+
     .scheme-block {
       display: flex;
       flex-direction: column;
       gap: 6px;
+      background: #ffffff;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
     }
 
     .scheme-header {
@@ -304,9 +315,12 @@
     }
 
     .scheme-title {
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       font-weight: 700;
       color: #111827;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .gradient-action-btn {
@@ -318,11 +332,12 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      flex-shrink: 0;
     }
 
     .gradient-action-btn svg {
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
       fill: currentColor;
     }
 
@@ -330,7 +345,7 @@
     .percentage-labels {
       display: flex;
       justify-content: space-between;
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       color: #374151;
       padding: 0 2px;
       font-weight: 500;
@@ -582,92 +597,98 @@
         </div>
       </div>
 
-      <!-- SEÇÃO: Variações e combinações de cores -->
+      <!-- SEÇÃO: Variações e combinações de cores em 2 Colunas -->
       <div class="variations-container">
         <h2 class="variations-header-title">Variações e combinações de cores</h2>
 
-        <!-- Tons Escuros -->
-        <div class="scheme-block">
-          <div class="scheme-title">Tons escuros</div>
-          <div class="percentage-labels">
-            <span>0%</span><span>10%</span><span>20%</span><span>30%</span><span>40%</span><span>50%</span><span>60%</span><span>70%</span><span>80%</span><span>90%</span><span>100%</span>
+        <div class="schemes-grid">
+          <!-- Tons Escuros -->
+          <div class="scheme-block">
+            <div class="scheme-header">
+              <span class="scheme-title">Tons escuros</span>
+            </div>
+            <div class="percentage-labels">
+              <span>0%</span><span>50%</span><span>100%</span>
+            </div>
+            <div id="darkTonesStrip" class="color-strip"></div>
           </div>
-          <div id="darkTonesStrip" class="color-strip"></div>
-        </div>
 
-        <!-- Tons Claros -->
-        <div class="scheme-block">
-          <div class="scheme-title">Tons claros</div>
-          <div class="percentage-labels">
-            <span>0%</span><span>10%</span><span>20%</span><span>30%</span><span>40%</span><span>50%</span><span>60%</span><span>70%</span><span>80%</span><span>90%</span><span>100%</span>
+          <!-- Tons Claros -->
+          <div class="scheme-block">
+            <div class="scheme-header">
+              <span class="scheme-title">Tons claros</span>
+            </div>
+            <div class="percentage-labels">
+              <span>0%</span><span>50%</span><span>100%</span>
+            </div>
+            <div id="lightTonesStrip" class="color-strip"></div>
           </div>
-          <div id="lightTonesStrip" class="color-strip"></div>
-        </div>
 
-        <!-- Complementar -->
-        <div class="scheme-block">
-          <div class="scheme-header">
-            <span class="scheme-title">Complementar</span>
-            <button class="gradient-action-btn" onclick="copySchemeColors('complementary')" title="Copiar Cores">
-              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-            </button>
+          <!-- Complementar -->
+          <div class="scheme-block">
+            <div class="scheme-header">
+              <span class="scheme-title">Complementar</span>
+              <button class="gradient-action-btn" onclick="copySchemeColors('complementary')" title="Copiar Cores">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              </button>
+            </div>
+            <div id="complementaryStrip" class="color-strip"></div>
           </div>
-          <div id="complementaryStrip" class="color-strip"></div>
-        </div>
 
-        <!-- Complementar Dividida -->
-        <div class="scheme-block">
-          <div class="scheme-header">
-            <span class="scheme-title">Complementar dividida</span>
-            <button class="gradient-action-btn" onclick="copySchemeColors('splitComplementary')" title="Copiar Cores">
-              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-            </button>
+          <!-- Complementar Dividida -->
+          <div class="scheme-block">
+            <div class="scheme-header">
+              <span class="scheme-title">Comp. dividida</span>
+              <button class="gradient-action-btn" onclick="copySchemeColors('splitComplementary')" title="Copiar Cores">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              </button>
+            </div>
+            <div id="splitComplementaryStrip" class="color-strip"></div>
           </div>
-          <div id="splitComplementaryStrip" class="color-strip"></div>
-        </div>
 
-        <!-- Triádica -->
-        <div class="scheme-block">
-          <div class="scheme-header">
-            <span class="scheme-title">Triádica</span>
-            <button class="gradient-action-btn" onclick="copySchemeColors('triadic')" title="Copiar Cores">
-              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-            </button>
+          <!-- Triádica -->
+          <div class="scheme-block">
+            <div class="scheme-header">
+              <span class="scheme-title">Triádica</span>
+              <button class="gradient-action-btn" onclick="copySchemeColors('triadic')" title="Copiar Cores">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              </button>
+            </div>
+            <div id="triadicStrip" class="color-strip"></div>
           </div>
-          <div id="triadicStrip" class="color-strip"></div>
-        </div>
 
-        <!-- Análoga -->
-        <div class="scheme-block">
-          <div class="scheme-header">
-            <span class="scheme-title">Análoga</span>
-            <button class="gradient-action-btn" onclick="copySchemeColors('analogous')" title="Copiar Cores">
-              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-            </button>
+          <!-- Análoga -->
+          <div class="scheme-block">
+            <div class="scheme-header">
+              <span class="scheme-title">Análoga</span>
+              <button class="gradient-action-btn" onclick="copySchemeColors('analogous')" title="Copiar Cores">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              </button>
+            </div>
+            <div id="analogousStrip" class="color-strip"></div>
           </div>
-          <div id="analogousStrip" class="color-strip"></div>
-        </div>
 
-        <!-- Monocromática -->
-        <div class="scheme-block">
-          <div class="scheme-header">
-            <span class="scheme-title">Monocromática</span>
-            <button class="gradient-action-btn" onclick="copySchemeColors('monochromatic')" title="Copiar Cores">
-              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-            </button>
+          <!-- Monocromática -->
+          <div class="scheme-block">
+            <div class="scheme-header">
+              <span class="scheme-title">Monocromática</span>
+              <button class="gradient-action-btn" onclick="copySchemeColors('monochromatic')" title="Copiar Cores">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              </button>
+            </div>
+            <div id="monochromaticStrip" class="color-strip"></div>
           </div>
-          <div id="monochromaticStrip" class="color-strip"></div>
-        </div>
 
-        <!-- Tetrádica -->
-        <div class="scheme-block">
-          <div class="scheme-header">
-            <span class="scheme-title">Tetrádica</span>
-            <button class="gradient-action-btn" onclick="copySchemeColors('tetradic')" title="Copiar Cores">
-              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-            </button>
+          <!-- Tetrádica -->
+          <div class="scheme-block">
+            <div class="scheme-header">
+              <span class="scheme-title">Tetrádica</span>
+              <button class="gradient-action-btn" onclick="copySchemeColors('tetradic')" title="Copiar Cores">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              </button>
+            </div>
+            <div id="tetradicStrip" class="color-strip"></div>
           </div>
-          <div id="tetradicStrip" class="color-strip"></div>
         </div>
       </div>
     </div>
