@@ -245,16 +245,22 @@
       flex-shrink: 0;
     }
 
-    .field-value {
+    /* Inputs Editáveis para Códigos de Cor */
+    .field-value-input {
       font-size: 0.9rem;
       font-weight: 500;
       color: #111827;
       font-family: monospace;
       flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      border: none;
+      outline: none;
+      background: transparent;
       padding: 0 8px;
+      width: 100%;
+    }
+
+    .field-value-input:focus {
+      color: #2563eb;
     }
 
     .copy-btn {
@@ -574,23 +580,23 @@
         <div id="paletteBar" class="palette-bar"></div>
       </div>
 
-      <!-- Seção Cor Selecionada -->
+      <!-- Seção Cor Selecionada (Com Inputs Editáveis) -->
       <div class="details-container">
         <div id="swatchPrimary" class="swatch-large"></div>
 
         <div class="code-fields">
           <div class="field-card">
             <span class="field-label">HEX</span>
-            <span class="field-value" id="hexText">#f6f6f8</span>
-            <button class="copy-btn" onclick="copyValue('hexText')">
+            <input type="text" class="field-value-input" id="hexInput" value="#f6f6f8" onchange="handleHexInputChange(this.value)" placeholder="#000000" />
+            <button class="copy-btn" onclick="copyValue('hexInput')">
               <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
             </button>
           </div>
 
           <div class="field-card">
             <span class="field-label">RGB</span>
-            <span class="field-value" id="rgbText">rgba(246, 246, 248)</span>
-            <button class="copy-btn" onclick="copyValue('rgbText')">
+            <input type="text" class="field-value-input" id="rgbInput" value="rgba(246, 246, 248)" onchange="handleRgbInputChange(this.value)" placeholder="rgb(0, 0, 0)" />
+            <button class="copy-btn" onclick="copyValue('rgbInput')">
               <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
             </button>
           </div>
@@ -732,8 +738,8 @@
     const placeholder = document.getElementById('placeholder');
     const paletteBar = document.getElementById('paletteBar');
     const swatchPrimary = document.getElementById('swatchPrimary');
-    const hexText = document.getElementById('hexText');
-    const rgbText = document.getElementById('rgbText');
+    const hexInput = document.getElementById('hexInput');
+    const rgbInput = document.getElementById('rgbInput');
     const savedList = document.getElementById('savedList');
     const toast = document.getElementById('toast');
 
@@ -789,7 +795,8 @@
     }
 
     function copyValue(elementId) {
-      const text = document.getElementById(elementId).innerText;
+      const el = document.getElementById(elementId);
+      const text = el.value || el.innerText;
       copyDirectText(text);
     }
 
@@ -819,7 +826,6 @@
       const containerWidth = imageContainer.clientWidth;
       const maxContainerHeight = 500;
 
-      // Calcula a escala priorizando a largura disponível para ampliar a imagem
       const scale = Math.min(containerWidth / loadedImage.width, maxContainerHeight / loadedImage.height);
 
       canvas.width = loadedImage.width * scale;
@@ -828,7 +834,6 @@
       selectedPin = null;
       redrawCanvas();
 
-      // Extrai a paleta de cores reais diretamente da imagem carregada
       extractColorsFromImage();
     };
 
@@ -902,11 +907,44 @@
 
       swatchPrimary.style.backgroundColor = hex;
 
-      hexText.innerText = hex.toLowerCase();
-      rgbText.innerText = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+      if (document.activeElement !== hexInput) {
+        hexInput.value = hex.toLowerCase();
+      }
+      if (document.activeElement !== rgbInput) {
+        rgbInput.value = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+      }
 
       renderPaletteBar();
       renderVariationsAndSchemes();
+    }
+
+    // Processa a digitação manual de código HEX
+    function handleHexInputChange(val) {
+      let cleaned = val.trim();
+      if (!cleaned.startsWith('#')) {
+        cleaned = '#' + cleaned;
+      }
+
+      if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(cleaned)) {
+        updateSelectedColor(cleaned);
+      } else {
+        showToast("Código HEX inválido!");
+      }
+    }
+
+    // Processa a digitação manual de valores RGB
+    function handleRgbInputChange(val) {
+      const matches = val.match(/\d+/g);
+      if (matches && matches.length >= 3) {
+        const r = Math.min(255, parseInt(matches[0]));
+        const g = Math.min(255, parseInt(matches[1]));
+        const b = Math.min(255, parseInt(matches[2]));
+
+        const hex = rgbToHex(r, g, b);
+        updateSelectedColor(hex);
+      } else {
+        showToast("Formato RGB inválido!");
+      }
     }
 
     function rgbToHex(r, g, b) {
