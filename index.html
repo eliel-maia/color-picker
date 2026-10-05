@@ -57,12 +57,12 @@
       display: none !important;
     }
 
-    /* Container de Imagem */
+    /* Container de Imagem Ampliado */
     .image-container {
       position: relative;
       width: 100%;
-      min-height: 250px;
-      max-height: 350px;
+      min-height: 280px;
+      max-height: 500px;
       background: #f1f3f5;
       border-radius: 16px;
       overflow: hidden;
@@ -817,9 +817,10 @@
       canvas.style.display = 'block';
 
       const containerWidth = imageContainer.clientWidth;
-      const containerHeight = imageContainer.clientHeight;
+      const maxContainerHeight = 500;
 
-      const scale = Math.min(containerWidth / loadedImage.width, containerHeight / loadedImage.height);
+      // Calcula a escala priorizando a largura disponível para ampliar a imagem
+      const scale = Math.min(containerWidth / loadedImage.width, maxContainerHeight / loadedImage.height);
 
       canvas.width = loadedImage.width * scale;
       canvas.height = loadedImage.height * scale;
@@ -971,7 +972,7 @@
       if (!canvas.width || !canvas.height) return;
 
       const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-      const step = 20; // Amostragem por salto para performance
+      const step = 20;
       const colorCounts = {};
 
       for (let i = 0; i < imgData.length; i += 4 * step) {
@@ -980,9 +981,8 @@
         const b = imgData[i + 2];
         const a = imgData[i + 3];
 
-        if (a < 128) continue; // Ignora transparência
+        if (a < 128) continue;
 
-        // Quantização em blocos de 32 para agrupar tons similares
         const qr = Math.floor(r / 32) * 32 + 16;
         const qg = Math.floor(g / 32) * 32 + 16;
         const qb = Math.floor(b / 32) * 32 + 16;
@@ -991,7 +991,6 @@
         colorCounts[hex] = (colorCounts[hex] || 0) + 1;
       }
 
-      // Ordena as cores por frequência
       extractedImageColors = Object.keys(colorCounts).sort((a, b) => colorCounts[b] - colorCounts[a]);
 
       renderPaletteBar();
@@ -1055,7 +1054,6 @@
       const rgb = hexToRgb(currentColor);
       const [h, s, l] = rgbToHsl(rgb.r, rgb.g, rgb.b);
 
-      // 1. Tons Escuros (0% a 100% de preto)
       const darkTones = [];
       for (let i = 0; i <= 10; i++) {
         const factor = 1 - (i * 0.1);
@@ -1063,7 +1061,6 @@
       }
       renderStripContainer('darkTonesStrip', darkTones);
 
-      // 2. Tons Claros (0% a 100% de branco)
       const lightTones = [];
       for (let i = 0; i <= 10; i++) {
         const factor = i * 0.1;
@@ -1074,27 +1071,22 @@
       }
       renderStripContainer('lightTonesStrip', lightTones);
 
-      // 3. Complementar (Base + 180 deg)
       const complementary = [currentColor, hslToHex(h + 180, s, l)];
       activeSchemesData['complementary'] = complementary;
       renderStripContainer('complementaryStrip', complementary);
 
-      // 4. Complementar Dividida (Base + 150 deg + 210 deg)
       const splitComp = [currentColor, hslToHex(h + 150, s, l), hslToHex(h + 210, s, l)];
       activeSchemesData['splitComplementary'] = splitComp;
       renderStripContainer('splitComplementaryStrip', splitComp);
 
-      // 5. Triádica (Base + 120 deg + 240 deg)
       const triadic = [currentColor, hslToHex(h + 120, s, l), hslToHex(h + 240, s, l)];
       activeSchemesData['triadic'] = triadic;
       renderStripContainer('triadicStrip', triadic);
 
-      // 6. Análoga (Base-30 deg + Base + Base+30 deg)
       const analogous = [hslToHex(h - 30, s, l), currentColor, hslToHex(h + 30, s, l)];
       activeSchemesData['analogous'] = analogous;
       renderStripContainer('analogousStrip', analogous);
 
-      // 7. Monocromática (Ajuste de brilho -35%, Base, +35%)
       const mono = [
         hslToHex(h, s, Math.max(10, l - 35)),
         currentColor,
@@ -1103,7 +1095,6 @@
       activeSchemesData['monochromatic'] = mono;
       renderStripContainer('monochromaticStrip', mono);
 
-      // 8. Tetrádica (Base + 60 deg + 180 deg + 240 deg)
       const tetradic = [
         currentColor,
         hslToHex(h + 60, s, l),
