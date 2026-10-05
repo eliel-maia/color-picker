@@ -217,7 +217,7 @@
       transform: scaleY(0.9);
     }
 
-    /* Seção Cores Selecionadas (Compacta) */
+    /* Seção Cor Selecionada */
     .details-container {
       display: flex;
       flex-direction: column;
@@ -292,51 +292,96 @@
       fill: currentColor;
     }
 
-    /* Lista de Cores Salvas */
-    .saved-grid-large {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-      gap: 10px;
+    /* ESTILO MODIFICADO: Cards de Cores Salvas */
+    .saved-container-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
       width: 100%;
     }
 
-    .saved-card {
-      height: 75px;
-      border-radius: 12px;
-      padding: 8px;
+    .color-card-item {
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid #e5e7eb;
+      padding: 12px;
       display: flex;
       flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+
+    .color-card-preview {
+      width: 100%;
+      height: 150px;
+      border-radius: 14px;
+      position: relative;
+    }
+
+    .color-card-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 0 4px 4px 4px;
+    }
+
+    .color-card-row {
+      display: flex;
+      align-items: center;
       justify-content: space-between;
-      border: 1px solid rgba(0,0,0,0.1);
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      transition: transform 0.1s;
     }
 
-    .saved-card:active {
-      transform: scale(0.97);
+    .color-card-hex-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .saved-card .hex-code {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: #fff;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    .color-card-hex {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #111827;
+      letter-spacing: 0.5px;
     }
 
-    .saved-card .delete-btn {
-      align-self: flex-end;
-      background: rgba(0,0,0,0.4);
-      color: #fff;
+    .icon-action-btn {
+      background: none;
       border: none;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
+      cursor: pointer;
+      padding: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
+      color: #2563eb;
+    }
+
+    .icon-action-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .color-card-menu-btn {
+      background: none;
+      border: none;
       cursor: pointer;
-      font-size: 0.7rem;
+      padding: 4px;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .color-card-menu-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    .color-card-rgb {
+      font-size: 0.9rem;
+      color: #888888;
+      font-weight: 500;
     }
 
     /* Toast Notification */
@@ -444,7 +489,7 @@
         <div id="paletteBar" class="palette-bar"></div>
       </div>
 
-      <!-- Seção Cor Selecionada (Única e Encostada na Paleta) -->
+      <!-- Seção Cor Selecionada -->
       <div class="details-container">
         <div id="swatchPrimary" class="swatch-large"></div>
 
@@ -468,10 +513,10 @@
       </div>
     </div>
 
-    <!-- View Cores Salvas -->
+    <!-- View Cores Salvas (Estrutura em Lista com os novos Cards) -->
     <div id="savedView" class="view-section hidden">
       <div class="section-title">Cores Salvas</div>
-      <div id="savedGrid" class="saved-grid-large"></div>
+      <div id="savedList" class="saved-container-list"></div>
     </div>
   </main>
 
@@ -510,7 +555,7 @@
     const swatchPrimary = document.getElementById('swatchPrimary');
     const hexText = document.getElementById('hexText');
     const rgbText = document.getElementById('rgbText');
-    const savedGrid = document.getElementById('savedGrid');
+    const savedList = document.getElementById('savedList');
     const toast = document.getElementById('toast');
 
     const zoomLens = document.getElementById('zoomLens');
@@ -567,6 +612,10 @@
 
     function copyValue(elementId) {
       const text = document.getElementById(elementId).innerText;
+      copyDirectText(text);
+    }
+
+    function copyDirectText(text) {
       navigator.clipboard.writeText(text);
       showToast(`Copiado: ${text}`);
     }
@@ -792,7 +841,7 @@
     }
 
     function removeColor(hex, event) {
-      event.stopPropagation();
+      if (event) event.stopPropagation();
       let saved = JSON.parse(localStorage.getItem('savedColors') || '[]');
       saved = saved.filter(c => c !== hex);
       localStorage.setItem('savedColors', JSON.stringify(saved));
@@ -800,31 +849,46 @@
       showToast("Cor removida!");
     }
 
+    /* RENDERIZAÇÃO NOVO MODELO DE CARDS */
     function renderSavedColors() {
       let saved = JSON.parse(localStorage.getItem('savedColors') || '[]');
-      savedGrid.innerHTML = '';
+      savedList.innerHTML = '';
 
       if (saved.length === 0) {
-        savedGrid.innerHTML = '<div style="color: #6b7280; font-size: 0.85rem; grid-column: 1/-1; text-align: center; padding: 20px;">Nenhuma cor salva ainda.</div>';
+        savedList.innerHTML = '<div style="color: #6b7280; font-size: 0.85rem; text-align: center; padding: 20px;">Nenhuma cor salva ainda.</div>';
         return;
       }
 
       saved.forEach(hex => {
+        const rgb = hexToRgb(hex);
         const card = document.createElement('div');
-        card.className = 'saved-card';
-        card.style.backgroundColor = hex;
-        card.onclick = () => {
-          updateSelectedColor(hex);
-          switchTab('picker');
-        };
+        card.className = 'color-card-item';
 
         card.innerHTML = `
-          <button class="delete-btn" onclick="removeColor('${hex}', event)">✕</button>
-          <span class="hex-code">${hex}</span>
+          <div class="color-card-preview" style="background-color: ${hex};" onclick="selectSavedColor('${hex}')"></div>
+          <div class="color-card-info">
+            <div class="color-card-row">
+              <div class="color-card-hex-group">
+                <span class="color-card-hex">${hex.toUpperCase()}</span>
+                <button class="icon-action-btn" onclick="copyDirectText('${hex.toUpperCase()}')" title="Copiar HEX">
+                  <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                </button>
+              </div>
+              <button class="color-card-menu-btn" onclick="removeColor('${hex}', event)" title="Remover Cor">
+                <svg viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+              </button>
+            </div>
+            <div class="color-card-rgb">RGB: ${rgb.r}, ${rgb.g}, ${rgb.b}</div>
+          </div>
         `;
 
-        savedGrid.appendChild(card);
+        savedList.appendChild(card);
       });
+    }
+
+    function selectSavedColor(hex) {
+      updateSelectedColor(hex);
+      switchTab('picker');
     }
 
     // Inicialização
