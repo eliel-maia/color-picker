@@ -42,14 +42,14 @@
       padding-bottom: 80px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
       width: 100%;
     }
 
     .view-section {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
       width: 100%;
     }
 
@@ -179,7 +179,6 @@
       fill: #4b5563;
     }
 
-    /* Barra de Cores Contínua */
     .palette-bar {
       display: flex;
       width: 100%;
@@ -208,7 +207,6 @@
       flex-direction: column;
       gap: 10px;
       width: 100%;
-      margin-top: 2px;
     }
 
     .swatch-large {
@@ -277,7 +275,102 @@
       fill: currentColor;
     }
 
-    /* ESTILO EM GRID: Cards Menores Lado a Lado */
+    /* SEÇÃO DE VARIAÇÕES E COMBINAÇÕES */
+    .variations-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .variations-header-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #111827;
+      line-height: 1.3;
+    }
+
+    .variations-description {
+      font-size: 0.85rem;
+      color: #4b5563;
+      line-height: 1.4;
+    }
+
+    .scheme-block {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .scheme-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .scheme-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .gradient-action-btn {
+      background: none;
+      border: none;
+      color: #2563eb;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .gradient-action-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .scheme-desc {
+      font-size: 0.82rem;
+      color: #4b5563;
+      line-height: 1.4;
+    }
+
+    /* Percentuais (0% - 100%) */
+    .percentage-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: #374151;
+      padding: 0 2px;
+      font-weight: 500;
+    }
+
+    .color-strip {
+      display: flex;
+      width: 100%;
+      height: 48px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .color-strip-item {
+      flex: 1;
+      height: 100%;
+      cursor: pointer;
+      transition: opacity 0.1s;
+    }
+
+    .color-strip-item:active {
+      opacity: 0.8;
+    }
+
+    /* ESTILO EM GRID PARA CORES SALVAS */
     .saved-grid-list {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -500,9 +593,113 @@
           </div>
         </div>
       </div>
+
+      <!-- SEÇÃO: Variações e combinações de cores -->
+      <div class="variations-container">
+        <h2 class="variations-header-title">Variações e combinações de cores</h2>
+        <p class="variations-description">
+          Esta seção mostra os tons claros (adicionando branco puro) e tons escuros/sombras (adicionando preto puro) da cor escolhida em passos de 10%.
+        </p>
+
+        <!-- Tons Escuros -->
+        <div class="scheme-block">
+          <div class="scheme-title">Tons escuros</div>
+          <div class="percentage-labels">
+            <span>0%</span><span>10%</span><span>20%</span><span>30%</span><span>40%</span><span>50%</span><span>60%</span><span>70%</span><span>80%</span><span>90%</span><span>100%</span>
+          </div>
+          <div id="darkTonesStrip" class="color-strip"></div>
+        </div>
+
+        <!-- Tons Claros -->
+        <div class="scheme-block">
+          <div class="scheme-title">Tons claros</div>
+          <div class="percentage-labels">
+            <span>0%</span><span>10%</span><span>20%</span><span>30%</span><span>40%</span><span>50%</span><span>60%</span><span>70%</span><span>80%</span><span>90%</span><span>100%</span>
+          </div>
+          <div id="lightTonesStrip" class="color-strip"></div>
+        </div>
+
+        <!-- Complementar -->
+        <div class="scheme-block">
+          <div class="scheme-header">
+            <span class="scheme-title">Complementar</span>
+            <button class="gradient-action-btn" onclick="copySchemeColors('complementary')">
+              <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.2c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.54 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+              Criar gradiente
+            </button>
+          </div>
+          <p class="scheme-desc">Emparelha a cor com seu oposto direto no círculo cromático (180°) para um efeito marcante e de alto contraste.</p>
+          <div id="complementaryStrip" class="color-strip"></div>
+        </div>
+
+        <!-- Complementar Dividida -->
+        <div class="scheme-block">
+          <div class="scheme-header">
+            <span class="scheme-title">Complementar dividida</span>
+            <button class="gradient-action-btn" onclick="copySchemeColors('splitComplementary')">
+              <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.2c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.54 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+              Criar gradiente
+            </button>
+          </div>
+          <p class="scheme-desc">Usa a cor base com duas cores adjacentes ao seu complemento — cerca de 30° do matiz oposto. Oferece contraste forte com mais flexibilidade que o par complementar clássico.</p>
+          <div id="splitComplementaryStrip" class="color-strip"></div>
+        </div>
+
+        <!-- Triádica -->
+        <div class="scheme-block">
+          <div class="scheme-header">
+            <span class="scheme-title">Triádica</span>
+            <button class="gradient-action-btn" onclick="copySchemeColors('triadic')">
+              <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.2c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.54 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+              Criar gradiente
+            </button>
+          </div>
+          <p class="scheme-desc">Inclui três cores igualmente espaçadas a 120° no círculo cromático. Para melhores resultados, deixe uma cor dominar e use as demais como acentos.</p>
+          <div id="triadicStrip" class="color-strip"></div>
+        </div>
+
+        <!-- Análoga -->
+        <div class="scheme-block">
+          <div class="scheme-header">
+            <span class="scheme-title">Análoga</span>
+            <button class="gradient-action-btn" onclick="copySchemeColors('analogous')">
+              <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.2c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.54 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+              Criar gradiente
+            </button>
+          </div>
+          <p class="scheme-desc">Este esquema usa três cores com brilho e saturação semelhantes, espaçadas a cada 30° no círculo cromático. Gera transições suaves e harmoniosas.</p>
+          <div id="analogousStrip" class="color-strip"></div>
+        </div>
+
+        <!-- Monocromática -->
+        <div class="scheme-block">
+          <div class="scheme-header">
+            <span class="scheme-title">Monocromática</span>
+            <button class="gradient-action-btn" onclick="copySchemeColors('monochromatic')">
+              <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.2c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.54 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+              Criar gradiente
+            </button>
+          </div>
+          <p class="scheme-desc">Usa variações de um único matiz com ajuste de brilho em ±50% — para um visual sutil e consistente.</p>
+          <div id="monochromaticStrip" class="color-strip"></div>
+        </div>
+
+        <!-- Tetrádica -->
+        <div class="scheme-block">
+          <div class="scheme-header">
+            <span class="scheme-title">Tetrádica</span>
+            <button class="gradient-action-btn" onclick="copySchemeColors('tetradic')">
+              <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.2c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.22 19.54 10.57 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+              Criar gradiente
+            </button>
+          </div>
+          <p class="scheme-desc">Combina dois pares complementares espaçados a 60° no círculo cromático para uma paleta dinâmica e equilibrada.</p>
+          <div id="tetradicStrip" class="color-strip"></div>
+        </div>
+      </div>
     </div>
 
-    <!-- View Cores Salvas (Estrutura em Grid) -->
+    <!-- View Cores Salvas -->
     <div id="savedView" class="view-section hidden">
       <div id="savedList" class="saved-grid-list"></div>
     </div>
@@ -558,10 +755,11 @@
     const navCamera = document.getElementById('navCamera');
     const navSaved = document.getElementById('navSaved');
 
-    let currentColor = "#051E4E";
+    let currentColor = "#7C5CFF";
     let loadedImage = new Image();
     let selectedPin = null;
     let paletteSteps = 8;
+    let activeSchemesData = {};
 
     function switchTab(tab) {
       navHome.classList.remove('active');
@@ -709,11 +907,12 @@
       rgbText.innerText = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b})`;
 
       renderPaletteBar();
+      renderVariationsAndSchemes();
     }
 
     function rgbToHex(r, g, b) {
       return "#" + [r, g, b].map(x => {
-        const hex = x.toString(16);
+        const hex = Math.round(x).toString(16);
         return hex.length === 1 ? '0' + hex : hex;
       }).join('').toUpperCase();
     }
@@ -744,6 +943,7 @@
     }
 
     function hslToHex(h, s, l) {
+      h = (h % 360 + 360) % 360;
       h /= 360; s /= 100; l /= 100;
       let r, g, b;
 
@@ -814,6 +1014,92 @@
       renderPaletteBar();
     }
 
+    /* RENDERIZADOR DE VARIAÇÕES E PALETAS HARMÔNICAS */
+    function renderVariationsAndSchemes() {
+      const rgb = hexToRgb(currentColor);
+      const [h, s, l] = rgbToHsl(rgb.r, rgb.g, rgb.b);
+
+      // 1. Tons Escuros (0% a 100% de preto)
+      const darkTones = [];
+      for (let i = 0; i <= 10; i++) {
+        const factor = 1 - (i * 0.1);
+        darkTones.push(rgbToHex(rgb.r * factor, rgb.g * factor, rgb.b * factor));
+      }
+      renderStripContainer('darkTonesStrip', darkTones);
+
+      // 2. Tons Claros (0% a 100% de branco)
+      const lightTones = [];
+      for (let i = 0; i <= 10; i++) {
+        const factor = i * 0.1;
+        const nr = rgb.r + (255 - rgb.r) * factor;
+        const ng = rgb.g + (255 - rgb.g) * factor;
+        const nb = rgb.b + (255 - rgb.b) * factor;
+        lightTones.push(rgbToHex(nr, ng, nb));
+      }
+      renderStripContainer('lightTonesStrip', lightTones);
+
+      // 3. Complementar (Base + 180 deg)
+      const complementary = [currentColor, hslToHex(h + 180, s, l)];
+      activeSchemesData['complementary'] = complementary;
+      renderStripContainer('complementaryStrip', complementary);
+
+      // 4. Complementar Dividida (Base + 150 deg + 210 deg)
+      const splitComp = [currentColor, hslToHex(h + 150, s, l), hslToHex(h + 210, s, l)];
+      activeSchemesData['splitComplementary'] = splitComp;
+      renderStripContainer('splitComplementaryStrip', splitComp);
+
+      // 5. Triádica (Base + 120 deg + 240 deg)
+      const triadic = [currentColor, hslToHex(h + 120, s, l), hslToHex(h + 240, s, l)];
+      activeSchemesData['triadic'] = triadic;
+      renderStripContainer('triadicStrip', triadic);
+
+      // 6. Análoga (Base-30 deg + Base + Base+30 deg)
+      const analogous = [hslToHex(h - 30, s, l), currentColor, hslToHex(h + 30, s, l)];
+      activeSchemesData['analogous'] = analogous;
+      renderStripContainer('analogousStrip', analogous);
+
+      // 7. Monocromática (Ajuste de brilho -50%, Base, +50%)
+      const mono = [
+        hslToHex(h, s, Math.max(10, l - 35)),
+        currentColor,
+        hslToHex(h, s, Math.min(90, l + 35))
+      ];
+      activeSchemesData['monochromatic'] = mono;
+      renderStripContainer('monochromaticStrip', mono);
+
+      // 8. Tetrádica (Base + 60 deg + 180 deg + 240 deg)
+      const tetradic = [
+        currentColor,
+        hslToHex(h + 60, s, l),
+        hslToHex(h + 180, s, l),
+        hslToHex(h + 240, s, l)
+      ];
+      activeSchemesData['tetradic'] = tetradic;
+      renderStripContainer('tetradicStrip', tetradic);
+    }
+
+    function renderStripContainer(elementId, colors) {
+      const container = document.getElementById(elementId);
+      if (!container) return;
+      container.innerHTML = '';
+
+      colors.forEach(colorHex => {
+        const item = document.createElement('div');
+        item.className = 'color-strip-item';
+        item.style.backgroundColor = colorHex;
+        item.title = colorHex;
+        item.onclick = () => updateSelectedColor(colorHex);
+        container.appendChild(item);
+      });
+    }
+
+    function copySchemeColors(schemeKey) {
+      const colors = activeSchemesData[schemeKey];
+      if (colors && colors.length) {
+        copyDirectText(colors.join(', '));
+      }
+    }
+
     function saveSelectedColor() {
       let saved = JSON.parse(localStorage.getItem('savedColors') || '[]');
       if (!saved.includes(currentColor)) {
@@ -876,7 +1162,7 @@
     }
 
     // Inicialização
-    updateSelectedColor("#051E4E");
+    updateSelectedColor("#7C5CFF");
 
     // Registro do Service Worker para PWA
     if ('serviceWorker' in navigator) {
