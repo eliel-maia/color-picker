@@ -34,21 +34,6 @@
       flex-direction: column;
     }
 
-    header {
-      padding: 14px 16px;
-      background-color: #ffffff;
-      text-align: center;
-      border-bottom: 1px solid #e5e7eb;
-      flex-shrink: 0;
-      width: 100%;
-    }
-
-    header h1 {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: #111827;
-    }
-
     main {
       flex: 1;
       overflow-y: auto;
@@ -340,7 +325,7 @@
     }
 
     .color-card-hex {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 800;
       color: #111827;
       letter-spacing: 0.3px;
@@ -462,10 +447,6 @@
 </head>
 <body>
 
-  <header>
-    <h1 id="headerTitle">Seletor de Cores</h1>
-  </header>
-
   <div id="toast" class="toast">Notificação</div>
 
   <main>
@@ -572,7 +553,6 @@
 
     const pickerView = document.getElementById('pickerView');
     const savedView = document.getElementById('savedView');
-    const headerTitle = document.getElementById('headerTitle');
 
     const navHome = document.getElementById('navHome');
     const navGallery = document.getElementById('navGallery');
@@ -593,13 +573,11 @@
       if (tab === 'saved') {
         pickerView.classList.add('hidden');
         savedView.classList.remove('hidden');
-        headerTitle.innerText = "Cores Salvas";
         navSaved.classList.add('active');
         renderSavedColors();
       } else {
         pickerView.classList.remove('hidden');
         savedView.classList.add('hidden');
-        headerTitle.innerText = "Seletor de Cores";
 
         if (tab === 'picker') navHome.classList.add('active');
         if (tab === 'gallery') navGallery.classList.add('active');
@@ -857,7 +835,6 @@
       showToast("Cor removida!");
     }
 
-    /* RENDERIZAÇÃO CARDS EM GRID (LADO A LADO) */
     function renderSavedColors() {
       let saved = JSON.parse(localStorage.getItem('savedColors') || '[]');
       savedList.innerHTML = '';
