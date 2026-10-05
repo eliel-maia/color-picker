@@ -580,14 +580,14 @@
         <div id="paletteBar" class="palette-bar"></div>
       </div>
 
-      <!-- Seção Cor Selecionada (Com Inputs Editáveis) -->
+      <!-- Seção Cor Selecionada (Atualizada com oninput) -->
       <div class="details-container">
         <div id="swatchPrimary" class="swatch-large"></div>
 
         <div class="code-fields">
           <div class="field-card">
             <span class="field-label">HEX</span>
-            <input type="text" class="field-value-input" id="hexInput" value="#f6f6f8" onchange="handleHexInputChange(this.value)" placeholder="#000000" />
+            <input type="text" class="field-value-input" id="hexInput" value="#f6f6f8" oninput="handleHexInputChange(this.value)" placeholder="#000000" />
             <button class="copy-btn" onclick="copyValue('hexInput')">
               <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
             </button>
@@ -595,7 +595,7 @@
 
           <div class="field-card">
             <span class="field-label">RGB</span>
-            <input type="text" class="field-value-input" id="rgbInput" value="rgba(246, 246, 248)" onchange="handleRgbInputChange(this.value)" placeholder="rgb(0, 0, 0)" />
+            <input type="text" class="field-value-input" id="rgbInput" value="rgba(246, 246, 248)" oninput="handleRgbInputChange(this.value)" placeholder="rgb(0, 0, 0)" />
             <button class="copy-btn" onclick="copyValue('rgbInput')">
               <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
             </button>
@@ -918,7 +918,7 @@
       renderVariationsAndSchemes();
     }
 
-    // Processa a digitação manual de código HEX
+    // Atualiza a cor em tempo real ao digitar o código HEX
     function handleHexInputChange(val) {
       let cleaned = val.trim();
       if (!cleaned.startsWith('#')) {
@@ -927,12 +927,10 @@
 
       if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(cleaned)) {
         updateSelectedColor(cleaned);
-      } else {
-        showToast("Código HEX inválido!");
       }
     }
 
-    // Processa a digitação manual de valores RGB
+    // Atualiza a cor em tempo real ao digitar os valores RGB
     function handleRgbInputChange(val) {
       const matches = val.match(/\d+/g);
       if (matches && matches.length >= 3) {
@@ -942,8 +940,6 @@
 
         const hex = rgbToHex(r, g, b);
         updateSelectedColor(hex);
-      } else {
-        showToast("Formato RGB inválido!");
       }
     }
 
