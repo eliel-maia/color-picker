@@ -580,7 +580,7 @@
         <div id="paletteBar" class="palette-bar"></div>
       </div>
 
-      <!-- Seção Cor Selecionada (Atualizada com oninput) -->
+      <!-- Seção Cor Selecionada -->
       <div class="details-container">
         <div id="swatchPrimary" class="swatch-large"></div>
 
@@ -918,7 +918,7 @@
       renderVariationsAndSchemes();
     }
 
-    // Atualiza a cor em tempo real ao digitar o código HEX
+    // Processa digitação manual do código HEX
     function handleHexInputChange(val) {
       let cleaned = val.trim();
       if (!cleaned.startsWith('#')) {
@@ -926,11 +926,13 @@
       }
 
       if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(cleaned)) {
+        // Reseta as cores extraídas da imagem para recalcular dinamicamente a paleta e os esquemas
+        extractedImageColors = [];
         updateSelectedColor(cleaned);
       }
     }
 
-    // Atualiza a cor em tempo real ao digitar os valores RGB
+    // Processa digitação manual do valor RGB
     function handleRgbInputChange(val) {
       const matches = val.match(/\d+/g);
       if (matches && matches.length >= 3) {
@@ -939,6 +941,8 @@
         const b = Math.min(255, parseInt(matches[2]));
 
         const hex = rgbToHex(r, g, b);
+        // Reseta as cores extraídas da imagem para recalcular dinamicamente a paleta e os esquemas
+        extractedImageColors = [];
         updateSelectedColor(hex);
       }
     }
@@ -1149,7 +1153,10 @@
         item.className = 'color-strip-item';
         item.style.backgroundColor = colorHex;
         item.title = colorHex;
-        item.onclick = () => updateSelectedColor(colorHex);
+        item.onclick = () => {
+          extractedImageColors = [];
+          updateSelectedColor(colorHex);
+        };
         container.appendChild(item);
       });
     }
@@ -1218,6 +1225,7 @@
     }
 
     function selectSavedColor(hex) {
+      extractedImageColors = [];
       updateSelectedColor(hex);
       switchTab('picker');
     }
