@@ -57,14 +57,14 @@
       padding-bottom: 80px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
       width: 100%;
     }
 
     .view-section {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
       width: 100%;
     }
 
@@ -142,14 +142,14 @@
       font-size: 1rem;
       color: #111827;
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     /* Seção da Paleta de Cores */
     .palette-container {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
     }
 
@@ -217,24 +217,19 @@
       transform: scaleY(0.9);
     }
 
-    /* Seção Cores Selecionadas */
+    /* Seção Cores Selecionadas (Compacta) */
     .details-container {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
-    }
-
-    .color-swatches-row {
-      display: flex;
-      gap: 12px;
-      width: 100%;
+      margin-top: 2px;
     }
 
     .swatch-large {
-      flex: 1;
-      height: 70px;
-      border-radius: 16px;
+      width: 100%;
+      height: 60px;
+      border-radius: 14px;
       background: #ffffff;
       border: 1px solid #e5e7eb;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
@@ -449,13 +444,9 @@
         <div id="paletteBar" class="palette-bar"></div>
       </div>
 
-      <!-- Seção Cores Detalhada -->
+      <!-- Seção Cor Selecionada (Única e Encostada na Paleta) -->
       <div class="details-container">
-        <div class="section-title">Cores</div>
-        <div class="color-swatches-row">
-          <div id="swatchPrimary" class="swatch-large"></div>
-          <div id="swatchSecondary" class="swatch-large"></div>
-        </div>
+        <div id="swatchPrimary" class="swatch-large"></div>
 
         <div class="code-fields">
           <div class="field-card">
@@ -517,7 +508,6 @@
     const placeholder = document.getElementById('placeholder');
     const paletteBar = document.getElementById('paletteBar');
     const swatchPrimary = document.getElementById('swatchPrimary');
-    const swatchSecondary = document.getElementById('swatchSecondary');
     const hexText = document.getElementById('hexText');
     const rgbText = document.getElementById('rgbText');
     const savedGrid = document.getElementById('savedGrid');
@@ -680,7 +670,6 @@
       const rgb = hexToRgb(hex);
 
       swatchPrimary.style.backgroundColor = hex;
-      swatchSecondary.style.backgroundColor = hex;
 
       hexText.innerText = hex.toLowerCase();
       rgbText.innerText = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b})`;
