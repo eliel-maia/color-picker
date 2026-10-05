@@ -182,8 +182,8 @@
     .palette-bar {
       display: flex;
       width: 100%;
-      height: 44px;
-      border-radius: 12px;
+      height: 36px;
+      border-radius: 10px;
       overflow: hidden;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       border: 1px solid rgba(0,0,0,0.05);
@@ -275,17 +275,17 @@
       fill: currentColor;
     }
 
-    /* SEÇÃO DE VARIAÇÕES E COMBINAÇÕES (SEM TEXTOS DESCRITIVOS) */
+    /* SEÇÃO DE VARIAÇÕES E COMBINAÇÕES */
     .variations-container {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
       margin-top: 10px;
       width: 100%;
     }
 
     .variations-header-title {
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: #111827;
       line-height: 1.3;
@@ -294,7 +294,7 @@
     .scheme-block {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .scheme-header {
@@ -304,7 +304,7 @@
     }
 
     .scheme-title {
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 700;
       color: #111827;
     }
@@ -313,7 +313,7 @@
       background: none;
       border: none;
       color: #2563eb;
-      padding: 4px;
+      padding: 2px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -321,8 +321,8 @@
     }
 
     .gradient-action-btn svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       fill: currentColor;
     }
 
@@ -330,19 +330,20 @@
     .percentage-labels {
       display: flex;
       justify-content: space-between;
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       color: #374151;
       padding: 0 2px;
       font-weight: 500;
     }
 
+    /* Barras de Cores com altura reduzida */
     .color-strip {
       display: flex;
       width: 100%;
-      height: 48px;
-      border-radius: 12px;
+      height: 32px;
+      border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
       border: 1px solid rgba(0,0,0,0.05);
     }
 
@@ -435,7 +436,7 @@
       border: none;
       cursor: pointer;
       padding: 2px;
-      color: #6b7280;
+      color: #ef4444;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -443,8 +444,8 @@
     }
 
     .color-card-menu-btn svg {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       fill: currentColor;
     }
 
@@ -581,7 +582,7 @@
         </div>
       </div>
 
-      <!-- SEÇÃO: Variações e combinações de cores (SEM TEXTOS DESCRITIVOS) -->
+      <!-- SEÇÃO: Variações e combinações de cores -->
       <div class="variations-container">
         <h2 class="variations-header-title">Variações e combinações de cores</h2>
 
@@ -981,10 +982,8 @@
       let colorsToDisplay = [];
 
       if (extractedImageColors.length > 0) {
-        // Exibe as cores reais mais presentes na imagem carregada
         colorsToDisplay = extractedImageColors.slice(0, paletteSteps);
       } else {
-        // Fallback enquanto não há imagem
         colorsToDisplay = generateContinuousPalette(currentColor, paletteSteps);
       }
 
@@ -1160,8 +1159,8 @@
                   <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                 </button>
               </div>
-              <button class="color-card-menu-btn" onclick="removeColor('${hex}', event)" title="Remover Cor">
-                <svg viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+              <button class="color-card-menu-btn" onclick="removeColor('${hex}', event)" title="Excluir Cor">
+                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
               </button>
             </div>
             <div class="color-card-rgb">RGB: ${rgb.r}, ${rgb.g}, ${rgb.b}</div>
