@@ -804,7 +804,8 @@
 
   <input type="file" id="fileGallery" accept="image/*" />
   <input type="file" id="fileCamera" accept="image/*" capture="environment" />
-  <input type="file" id="fileImportJson" accept=".json" style="display:none" onchange="importColors(event)" />
+  <!-- CORREÇÃO APLICADA AQUI: Adicionado suporte genérico para ficheiros JSON no Android/iOS -->
+  <input type="file" id="fileImportJson" accept="application/json, .json, text/plain, */*" style="display:none" onchange="importColors(event)" />
 
   <script>
     const canvas = document.getElementById('canvas');
@@ -1386,7 +1387,7 @@
         } catch (err) {
           showToast("Erro ao ler o arquivo JSON!");
         }
-        event.target.value = ''; // Reseta o input para permitir importar o mesmo arquivo se necessário
+        event.target.value = '';
       };
       reader.readAsText(file);
     }
@@ -1394,14 +1395,44 @@
     // Inicialização
     updateSelectedColor("#7C5CFF");
 
-    // Registro do Service Worker para PWA
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('Service Worker registrado:', reg.scope))
-          .catch(err => console.error('Erro ao registrar Service Worker:', err));
-      });
-    }
+// Registro do Service Worker com busca e ativação de atualização automática
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(registration => {
+        console.log('Service Worker registrado:', registration.scope);
+
+        // Força a checagem de atualizações no servidor
+        registration.update();
+
+        // Monitora se há um novo Service Worker aguardando ativação
+        registration.onupdatefound = () => {
+          const installingWorker = registration.installing;
+          if (installingWorker == null) return;
+
+          installingWorker.onstatechange = () => {
+            if (installingWorker.state === 'installed') {
+              if (navigator.serviceWorker.controller) {
+                // Nova versão instalada! Envia mensagem para ativar imediatamente
+                installingWorker.postMessage({ action: 'skipWaiting' });
+              }
+            }
+          };
+        };
+      })
+      .catch(err => console.error('Erro ao registrar Service Worker:', err));
+
+    // Quando o novo Service Worker assumir o controle, recarrega a página automaticamente
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
+  });
+}
+
   </script>
 </body>
 </html>
