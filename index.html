@@ -762,8 +762,19 @@
       </div>
     </div>
 
-    <!-- View Cores Salvas -->
+    <!-- View Cores Salvas com Ações de Backup -->
     <div id="savedView" class="view-section hidden">
+      <div class="palette-toolbar">
+        <span class="section-title" style="margin:0;">Minhas Cores</span>
+        <div class="tool-group">
+          <button class="circle-btn" onclick="exportColors()" title="Exportar para o celular">
+            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          </button>
+          <button class="circle-btn" onclick="triggerImport()" title="Importar do celular">
+            <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+          </button>
+        </div>
+      </div>
       <div id="savedList" class="saved-grid-list"></div>
     </div>
   </main>
@@ -793,6 +804,7 @@
 
   <input type="file" id="fileGallery" accept="image/*" />
   <input type="file" id="fileCamera" accept="image/*" capture="environment" />
+  <input type="file" id="fileImportJson" accept=".json" style="display:none" onchange="importColors(event)" />
 
   <script>
     const canvas = document.getElementById('canvas');
@@ -1330,6 +1342,53 @@
       extractedImageColors = [];
       updateSelectedColor(hex);
       switchTab('picker');
+    }
+
+    // --- FUNÇÕES DE EXPORTAÇÃO E IMPORTAÇÃO DE BACKUP ---
+    function exportColors() {
+      let saved = JSON.parse(localStorage.getItem('savedColors') || '[]');
+      if (saved.length === 0) {
+        showToast("Nenhuma cor para exportar!");
+        return;
+      }
+      
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(saved, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "paleta_cores_salvas.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast("Arquivo de cores baixado!");
+    }
+
+    function triggerImport() {
+      document.getElementById('fileImportJson').click();
+    }
+
+    function importColors(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const importedColors = JSON.parse(e.target.result);
+          if (Array.isArray(importedColors)) {
+            let saved = JSON.parse(localStorage.getItem('savedColors') || '[]');
+            const merged = Array.from(new Set([...saved, ...importedColors]));
+            localStorage.setItem('savedColors', JSON.stringify(merged));
+            renderSavedColors();
+            showToast("Cores importadas com sucesso!");
+          } else {
+            showToast("Formato de arquivo inválido!");
+          }
+        } catch (err) {
+          showToast("Erro ao ler o arquivo JSON!");
+        }
+        event.target.value = ''; // Reseta o input para permitir importar o mesmo arquivo se necessário
+      };
+      reader.readAsText(file);
     }
 
     // Inicialização
